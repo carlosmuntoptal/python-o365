@@ -222,7 +222,8 @@ class DriveItemVersion(ApiComponent, DownloadableMixin):
 
     _endpoints = {
         'download': '/versions/{id}/content',
-        'restore': '/versions/{id}/restoreVersion'
+        'restore': '/versions/{id}/restoreVersion',
+        'delete': '/versions/{id}'
     }
 
     def __init__(self, *, parent=None, con=None, **kwargs):
@@ -303,6 +304,20 @@ class DriveItemVersion(ApiComponent, DownloadableMixin):
         return super().download(to_path=to_path, name=name,
                                 chunk_size=chunk_size,
                                 convert_to_pdf=convert_to_pdf)
+    
+    def delete(self):
+        """ Delete this version.
+        You can not delete the current version (last one).
+
+        :return: Success / Failure
+        :rtype: bool
+        """
+        url = self.build_url(
+            self._endpoints.get('delete').format(id=self.object_id))
+
+        response = self.con.delete(url)
+
+        return bool(response)
 
 
 class DriveItemPermission(ApiComponent):
